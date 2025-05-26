@@ -151,3 +151,4 @@ def teststatfc(n):
 
 for i in range(10) :
     print(teststatfc(i))
+caca
