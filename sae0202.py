@@ -417,3 +417,5 @@ def analyse_seuil_puissance(min_n=10, max_n=30):
     plt.legend()
     plt.grid(True)
     plt.show()
+
+analyse_seuil_puissance()
