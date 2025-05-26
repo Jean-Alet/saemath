@@ -11,20 +11,6 @@ def Dijkstra(M,d):
 
 
 
-
-
-
-G = nx.Graph()
-
-G.add_edges_from([
-    ('A', 'B'),
-    ('A', 'C'),
-    ('B', 'D'),
-    ('B', 'E'),
-    ('C', 'F'),
-    ('E', 'F')
-])
-
 #Parcours en largeur (BFS),
 bfs = list(nx.bfs_tree(G, source='A'))
 print("BFS à partir de A :", bfs)
@@ -76,6 +62,8 @@ def graphe3(n, p, a, b):
             else:
                 matrice[i][j] = float('inf')
     return matrice
+
+
 
 
 
