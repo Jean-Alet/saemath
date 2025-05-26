@@ -59,15 +59,48 @@ def Bellman_Ford(M, d):
 
 # 3.1 Graphe avec ~50% d’arcs
 def graphe(n,a,b):
-    ...
+    matrice = [[float('inf') for i in range(n)] for j in range(n)]
+    if a >= b:
+        a,b = b,a 
+    for i in range(n):
+        for j in range(n):
+            matrice[i][j]= random.randint(0,1)
+    for i in range(n):
+        for j in range(n):
+            if i==j:
+                matrice[i][j] = float('inf')
+            if matrice[i][j] == 1:
+                matrice[i][j] = random.randint(a, b)
+            else:
+                matrice[i][j] = float('inf')
+    return matrice
 
 # 3.2 Graphe avec proportion variable p
 def graphe2(n,p,a,b):
-    ...
+    matrice = [[float('inf') for i in range(n)] for j in range(n)]
+    if a >= b:
+        a,b = b,a 
+    for i in range(n):
+        for j in range(n):
+            if i==j:
+                matrice[i][j] = float('inf')
+            if random.random() < p:
+                matrice[i][j] = random.randint(a, b)
+            else:
+                matrice[i][j] = float('inf')
+    return matrice
 
 # Variante symétrique non orientée pour certains tests
 def graphe3(n, p, a, b):
-    ...
+    matrice = [[float('inf') for i in range(n)] for j in range(n)]
+    for i in range(n):
+        for j in range(i + 1, n):
+            if i==j:
+                matrice[i][j] = float('inf')
+            if random.random() < p:
+                matrice[i][j] = random.randint(a, b - 1)
+                matrice[j][i] = matrice[i][j]
+    return matrice
 
 # -----------------------------------------------------------------------------
 # 4. Codage des algorithmes de plus court chemin
@@ -80,15 +113,81 @@ def graphe3(n, p, a, b):
 
 # Parcours largeur
 def pl(M, s):
-    ...
+    n = len(M)
+    couleur = {i: "blanc" for i in range(n)}
+    couleur[s] = "vert"
+    file = [s]
+    Resultat = [s]
+    while len(file) > 0:
+        i = file[0]
+        j = 0
+        while j < n:
+            if M[i][j] == 1 and couleur[j] == "blanc":
+                file.append(j)
+                couleur[j] = "vert"
+                Resultat.append(j)
+            j += 1
+        file.pop(0)
+    return Resultat
 
 # Parcours profondeur
 def pp(M, s):
-    ...
+    n = len(M)
+    couleur = {i: "blanc" for i in range(n)}
+    couleur[s] = "vert"
+    pile = [s]
+    Resultat = [s]
+    while len(pile) > 0:
+        i = pile[-1]
+        Succ_blanc = []
+        j = 0
+        while j < n:
+            if M[i][j] == 1 and couleur[j] == "blanc":
+                Succ_blanc.append(j)
+            j += 1
+        if len(Succ_blanc) > 0:
+            v = Succ_blanc[0]
+            couleur[v] = "vert"
+            pile.append(v)
+            Resultat.append(v)
+        else:
+            pile.pop()
+    return Resultat
 
 # Variante de Bellman-Ford
 def Bellman_Ford_variante(M, d, mode):
-    ...
+    n = len(M)
+    dist = [float('inf')] * n
+    pred = [None] * n
+    dist[d] = 0
+    pred[d] = d
+
+    if mode == 'pl':
+        ordre_sommets = pl(M, d)
+    elif mode == 'pp':
+        ordre_sommets = pp(M, d)
+    else:
+        ordre_sommets = list(range(n))
+        random.shuffle(ordre_sommets)
+
+    F = []
+    for u in ordre_sommets:
+        for v in range(n):
+            if M[u][v] != float('inf'):
+                F.append((u, v))
+
+    modification = True
+    iteration = 0
+    while modification and iteration < n - 1:
+        modification = False
+        for (u, v) in F:
+            if dist[u] + M[u][v] < dist[v]:
+                dist[v] = dist[u] + M[u][v]
+                pred[v] = u
+                modification = True
+        iteration += 1
+
+    return iteration
 
 def test_variantes_BF():
     n = 50
@@ -104,10 +203,16 @@ def test_variantes_BF():
 
 # 6.1 Temps de calcul
 def TempsDij(n):
-    ...
+    m = graphe3(n, 0.2, 1, 10)
+    start = time.time()
+    Dijkstra(m, 0)
+    return time.time() - start
 
 def TempsBF(n):
-    ...
+    m = graphe3(n, 0.2, 1, 10)
+    start = time.time()
+    Bellman_Ford_variante(m, 0, mode='pl')
+    return time.time() - start
 
 # 6.2 Courbes et régression
 valeurs = list(range(5, 201, 10))
@@ -136,10 +241,18 @@ print(f"Exposant estimé (Bellman-Ford PL) a ≈ {result_bf.slope:.2f}")
 
 # 6.2 bis : cas p = 1/n
 def TempsDij_variable(n):
-    ...
+    p = 1 / n
+    m = graphe3(n, p, 1, 10)
+    start = time.time()
+    Dijkstra(m, 0)
+    return time.time() - start
 
 def TempsBF_variable(n):
-    ...
+    p = 1 / n
+    m = graphe3(n, p, 1, 10)
+    start = time.time()
+    Bellman_Ford_variante(m, 0, mode='pl')
+    return time.time() - start
 
 temps_dij_var = [TempsDij_variable(n) for n in valeurs]
 temps_bf_var = [TempsBF_variable(n) for n in valeurs]
@@ -163,33 +276,64 @@ plt.show()
 # -----------------------------------------------------------------------------
 
 def graphepourfc(n, p=0.5):
-    ...
+    matrice = [[0 for i in range(n)] for j in range(n)]
+    for i in range(n):
+        for j in range(n):
+            if random.random() <= p:
+                matrice[i][j] = 1
+            else:
+                matrice[i][j] = 0
+    return matrice
 
 def Trans2(M):
-    ...
+    n = len(M)
+    for k in range(n):
+        for i in range(n):
+            for j in range(n):
+                if M[i][k] and M[k][j]:
+                    M[i][j] = 1
+    return M
 
 def fc(M):
-    ...
+    A = Trans2(M)
+    n = len(M)
+    for i in range(n):
+        for j in range(n):
+            if A[i][j] == 0:
+                return False
+    return True
 
 # -----------------------------------------------------------------------------
 # 8. Forte connexité pour un graphe avec p=50%
 # -----------------------------------------------------------------------------
 
 def teststatfc(n, p=0.5):
-    ...
+    # valeur par défaut de p est a 0.5
+    a = 200
+    b = 0
+    for i in range(a):
+        if fc(graphepourfc(n, p)):
+            b += 1
+    return (100 * b / a)
 
 def lafonctionquiaffiche(n, p=0.5):
-    ...
+    print("forte connexité avec proba de 1 :", p)
+    for i in range(1, n+1):
+        a = teststatfc(i, p)
+        print("n = ",i,": ",a," %")
 
 # -----------------------------------------------------------------------------
 # 9. Détermination du seuil de forte connexité
 # -----------------------------------------------------------------------------
 
 def seuil(n):
-    ...
-
-# Exemple
-print(seuil(20))
+    p = 0.0
+    while p <= 1.0:
+        taux = teststatfc(n, p)
+        if taux >= 99:
+            return round(p, 2)
+        p += 0.01
+    return None
 
 # -----------------------------------------------------------------------------
 # 10. Étude et identification de la fonction seuil
@@ -197,12 +341,43 @@ print(seuil(20))
 
 # 10.1 Graphique
 def graphe_seuil(min_n=10, max_n=40):
-    ...
-
-graphe_seuil()
+    X = []
+    Y = []
+    for n in range(min_n, max_n + 1):
+        s = seuil(n)
+        X.append(n)
+        Y.append(s)
+    
+    plt.plot(X, Y, marker='o')
+    plt.xlabel("Taille n du graphe")
+    plt.ylabel("Seuil de forte connexité (p)")
+    plt.title("Évolution du seuil de forte connexité en fonction de n")
+    plt.grid(True)
+    plt.show()
 
 # 10.2 Régression log-log
 def analyse_seuil_puissance(min_n=10, max_n=40):
-    ...
+    X = []
+    Y = []
+    for n in range(min_n, max_n + 1):
+        s = seuil(n)
+        if s is not None:
+            X.append(n)
+            Y.append(s)
 
-analyse_seuil_puissance()
+    log_n = np.log(X)
+    log_s = np.log(Y)
+    pente, ordonnee_origine, _, _, _ = linregress(log_n, log_s)
+    a = pente
+    c = np.exp(ordonnee_origine)
+    
+    print(f"seuil(n) ≈ {c:.3f} × n^{a:.3f}")
+    
+    plt.plot(log_n, log_s, 'o', label="log(seuil)")
+    plt.plot(log_n, a*log_n + ordonnee_origine, label=f"Régression : y = {a:.2f}x + {ordonnee_origine:.2f}")
+    plt.xlabel("log(n)")
+    plt.ylabel("log(seuil(n))")
+    plt.title("Régression log-log de seuil(n)")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
