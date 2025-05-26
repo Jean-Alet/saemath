@@ -63,7 +63,7 @@ def Dijkstra(M, d):
 
     non_visites = set(range(n))
 
-    while non_visites:
+    while len(non_visites) > 0:
         s = -1
         plus_petite_dist = float('inf')
         for i in non_visites:
@@ -72,31 +72,30 @@ def Dijkstra(M, d):
                 s = i
 
         if s == -1:
-            break
+            non_visites.clear()
+        else:
+            non_visites.remove(s)
 
-        non_visites.remove(s)
-
-        for t in range(n):
-            if M[s][t] != float('inf') and t in non_visites:
-                if dist[s] + M[s][t] < dist[t]:
-                    dist[t] = dist[s] + M[s][t]
-                    pred[t] = s
+            for t in range(n):
+                if M[s][t] != float('inf') and t in non_visites:
+                    if dist[s] + M[s][t] < dist[t]:
+                        dist[t] = dist[s] + M[s][t]
+                        pred[t] = s
 
     resultats = {}
     for s in range(n):
-        if s == d:
-            continue
-        if dist[s] == float('inf'):
-            resultats[s] = "Sommet non joignable depuis " + str(d)
-        else:
-            chemin = []
-            courant = s
-            while courant != d:
-                chemin.append(courant)
-                courant = pred[courant]
-            chemin.append(d)
-            chemin.reverse()
-            resultats[s] = (dist[s], chemin)
+        if s != d:
+            if dist[s] == float('inf'):
+                resultats[s] = "Sommet non joignable depuis " + str(d)
+            else:
+                chemin = []
+                courant = s
+                while courant != d:
+                    chemin.append(courant)
+                    courant = pred[courant]
+                chemin.append(d)
+                chemin.reverse()
+                resultats[s] = (dist[s], chemin)
 
     return resultats 
 
@@ -126,64 +125,70 @@ def Bellman_Ford(M, d):
                 modification = True
         iteration += 1
 
-    for (u, v) in F:
+    cycle_negatif = False
+    idx = 0
+    while not cycle_negatif and idx < len(F):
+        u, v = F[idx]
         if dist[u] + M[u][v] < dist[v]:
-            print("Présence d'un cycle de poids négatif. Pas de plus court chemin fiable.")
-            return None
+            cycle_negatif = True
+        idx += 1
+
+    if cycle_negatif:
+        print("Présence d'un cycle de poids négatif. Pas de plus court chemin fiable.")
+        return None
 
     resultats = {}
     for s in range(n):
-        if s == d:
-            continue
-        if dist[s] == float('inf'):
-            resultats[s] = "Sommet non joignable depuis " + str(d)
-        else:
-            chemin = []
-            courant = s
-            while courant != d:
-                chemin.append(courant)
-                courant = pred[courant]
-            chemin.append(d)
-            chemin.reverse()
-            resultats[s] = (dist[s], chemin)
+        if s != d:
+            if dist[s] == float('inf'):
+                resultats[s] = "Sommet non joignable depuis " + str(d)
+            else:
+                chemin = []
+                courant = s
+                while courant != d:
+                    chemin.append(courant)
+                    courant = pred[courant]
+                chemin.append(d)
+                chemin.reverse()
+                resultats[s] = (dist[s], chemin)
 
     return resultats
 
 def pl(M, s):
-    n=np.shape(M)[0]
-    couleur={}
-    for i in range(n):
-        couleur[i]="blanc"
-    couleur[s]="vert"
-    file=[s]
-    Resultat=[s]
-    while file!=[]:
-        i=file[0]
-        for j in range(n):
-            if M[i][j]==1 and couleur[j]=="blanc":
+    n = len(M)
+    couleur = {i: "blanc" for i in range(n)}
+    couleur[s] = "vert"
+    file = [s]
+    Resultat = [s]
+    while len(file) > 0:
+        i = file[0]
+        j = 0
+        while j < n:
+            if M[i][j] == 1 and couleur[j] == "blanc":
                 file.append(j)
-                couleur[j]="vert"
+                couleur[j] = "vert"
                 Resultat.append(j)
+            j += 1
         file.pop(0)
     return Resultat
 
 def pp(M, s):
-    n=len(M)
-    couleur={}
-    for i in range(n):
-        couleur[i]="blanc"
-    couleur[s]="vert"
-    pile=[s]
-    Resultat=[s]
-    while pile!=[]:
-        i=pile[-1]
-        Succ_blanc=[]
-        for j in range(n):
-            if M[i][j]==1 and couleur[j]=="blanc":
+    n = len(M)
+    couleur = {i: "blanc" for i in range(n)}
+    couleur[s] = "vert"
+    pile = [s]
+    Resultat = [s]
+    while len(pile) > 0:
+        i = pile[-1]
+        Succ_blanc = []
+        j = 0
+        while j < n:
+            if M[i][j] == 1 and couleur[j] == "blanc":
                 Succ_blanc.append(j)
-        if Succ_blanc!=[]:
-            v=Succ_blanc[0]
-            couleur[v]="vert"
+            j += 1
+        if len(Succ_blanc) > 0:
+            v = Succ_blanc[0]
+            couleur[v] = "vert"
             pile.append(v)
             Resultat.append(v)
         else:
@@ -310,9 +315,9 @@ temps_bf_var = [TempsBF_variable(n) for n in valeurs]
 plt.figure(figsize=(10,6))
 plt.plot(valeurs, temps_dij_var, label="Dijkstra (p=1/n)", marker='o')
 plt.plot(valeurs, temps_bf_var, label="Bellman-Ford PL (p=1/n)", marker='s')
-plt.xlabel("Nombre de sommets n")
+plt.xlabel("Taille du graphe (n)")
 plt.ylabel("Temps (secondes)")
-plt.title("Temps avec proportion p = 1/n")
+plt.title("Temps de calcul des plus courts chemins avec p=1/n")
 plt.legend()
 plt.grid(True)
 plt.show()
@@ -390,8 +395,6 @@ def graphe_seuil(min_n=10, max_n=40):
     
 graphe_seuil(10, 40)
 
-from scipy.stats import linregress
-
 def analyse_seuil_puissance(min_n=10, max_n=30):
     X = []
     Y = []
@@ -403,19 +406,17 @@ def analyse_seuil_puissance(min_n=10, max_n=30):
 
     log_n = np.log(X)
     log_s = np.log(Y)
-    slope, intercept, _, _, _ = linregress(log_n, log_s)
-    a = slope
-    c = np.exp(intercept)
+    pente, ordonnee_origine, _, _, _ = linregress(log_n, log_s)
+    a = pente
+    c = np.exp(ordonnee_origine)
     
     print(f"seuil(n) ≈ {c:.3f} × n^{a:.3f}")
     
     plt.plot(log_n, log_s, 'o', label="log(seuil)")
-    plt.plot(log_n, a*log_n + intercept, label=f"Régression : y = {a:.2f}x + {intercept:.2f}")
+    plt.plot(log_n, a*log_n + ordonnee_origine, label=f"Régression : y = {a:.2f}x + {ordonnee_origine:.2f}")
     plt.xlabel("log(n)")
     plt.ylabel("log(seuil(n))")
     plt.title("Régression log-log de seuil(n)")
     plt.legend()
     plt.grid(True)
     plt.show()
-
-analyse_seuil_puissance()
