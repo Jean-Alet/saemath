@@ -393,9 +393,9 @@ def graphe_seuil(min_n=10, max_n=40):
     plt.grid(True)
     plt.show()
     
-graphe_seuil(10, 40)
+graphe_seuil()
 
-def analyse_seuil_puissance(min_n=10, max_n=30):
+def analyse_seuil_puissance(min_n=10, max_n=40):
     X = []
     Y = []
     for n in range(min_n, max_n + 1):
@@ -420,3 +420,5 @@ def analyse_seuil_puissance(min_n=10, max_n=30):
     plt.legend()
     plt.grid(True)
     plt.show()
+
+analyse_seuil_puissance()
