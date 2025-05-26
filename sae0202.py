@@ -1,5 +1,4 @@
 import numpy as np
-import networkx as nx
 import random
 import time as t
 import matplotlib.pyplot as plt
