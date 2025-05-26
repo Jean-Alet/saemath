@@ -43,5 +43,3 @@ def lafonctionquiaffiche(p=0.5):
     for n in range(1, 16):
         a = teststatfc(n, p)
         print("n = ",n,": ",a," %")
-
-lafonctionquiaffiche()
