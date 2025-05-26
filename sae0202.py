@@ -264,18 +264,14 @@ M_bf = [
     [float('inf'), 6, float('inf'), 7, float('inf')],
     [float('inf'), float('inf'), 5, 8, -4],
     [float('inf'), -2, float('inf'), float('inf'), float('inf')],
-    [float('inf'), float('inf'), -3 float('inf'), 9],
+    [float('inf'), float('inf'), -3, float('inf'), 9],
     [2, float('inf'), 7, float('inf'), float('inf')],
 ]
 
-print("[")
-for i in range(len(M)):
+for i in range(len(M_dij)):
     print(M_dij[i])
-print("]")
-print("[")
-for i in range(len(M)):
+for i in range(len(M_bf)):
     print(M_bf[i])
-print("]")
 print(Dijkstra(M_dij, 1))
 print(Bellman_Ford(M_bf, 1))
 
