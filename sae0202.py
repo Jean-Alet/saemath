@@ -11,7 +11,6 @@ def Dijkstra(M,d):
 
 
 
-#Parcours en largeur (BFS),
 bfs = list(nx.bfs_tree(G, source='A'))
 print("BFS à partir de A :", bfs)
 
