@@ -49,9 +49,37 @@ def Bellman_Ford(M, d):
 # -----------------------------------------------------------------------------
 
 # → Partie à compléter : utiliser des bibliothèques comme NetworkX ou Graphviz
-# Exemple de fonction attendue :
-# def dessiner_graphe(M): ...
-# def dessiner_chemin(M, chemin): ...
+def afficher_graphe_oriente(matrice, chemin=None, nom_fichier='graphe_oriente'):
+    if chemin is None:
+        chemin = []
+    
+    aretes_chemin = list(zip(chemin, chemin[1:]))
+    
+    dot = Digraph(format='png')
+    dot.attr(rankdir='LR')
+    
+    
+    for i in range(len(matrice)):
+        label = str(i)
+        color = 'lightcoral' if i in chemin else 'lightblue'
+        dot.node(label, style='filled', fillcolor=color)
+    
+    for i in range(len(matrice)):
+        for j in range(len(matrice[i])):
+            poids = matrice[i][j]
+            if poids != 0 and not np.isinf(poids):
+                couleur = 'red' if (i, j) in aretes_chemin else 'black'
+                dot.edge(str(i), str(j), label=str(int(poids)), color=couleur)
+
+    dot.render(nom_fichier, view=True)
+
+#resultats = Dijkstra(M_dij, 0)
+#(a, b) = resultats[3]
+#afficher_graphe_oriente(M_dij, b, nom_fichier='dijkstra')
+
+#resultats = Bellman_Ford(M_bf, 0)
+#(a, b) = resltats[4]
+#afficher_graphe_oriente(M_bf, b, nom_fichier='bellman_ford')
 
 # -----------------------------------------------------------------------------
 # 3. Génération aléatoire de matrices de graphes pondérés
