@@ -2,6 +2,7 @@ import numpy as np
 import random
 import time
 import matplotlib.pyplot as plt
+from scipy.stats import linregress
 
 def graphe(n,a,b):
     matrice = [[float('inf') for i in range(n)] for j in range(n)]
@@ -12,6 +13,8 @@ def graphe(n,a,b):
             matrice[i][j]= random.randint(0,1)
     for i in range(n):
         for j in range(n):
+            if i == j:
+                matrice[i][j]= float('inf')
             if matrice[i][j] == 1:
                 matrice[i][j] = random.randint(a, b)
             else:
@@ -24,31 +27,20 @@ def graphe2(n,p,a,b):
         a,b = b,a 
     for i in range(n):
         for j in range(n):
+            if i == j:
+                matrice[i][j]= float('inf')
             if random.random() < p:
                 matrice[i][j] = random.randint(a, b)
             else:
                 matrice[i][j] = float('inf')
     return matrice 
 
-def graphe3o(n, p, a, b):
-    matrice = [[float('inf') for i in range(n)] for j in range(n)]
-    if a >= b:
-        a, b = b, a
-    for i in range(n):
-        for j in range(n):
-            matrice[i][j] = np.random.binomial(1, p)
-    for i in range(n):
-        for j in range(n):
-            if matrice[i][j] == 1:
-                matrice[i][j] = random.randint(a, b - 1)
-            else:
-                matrice[i][j] = float('inf')
-    return matrice
-
 def graphe3(n, p, a, b):
     matrice = [[float('inf') for i in range(n)] for j in range(n)]
     for i in range(n):
         for j in range(i + 1, n):
+            if i == j:
+                matrice[i][j]= float('inf')
             if random.random() < p:
                 matrice[i][j] = random.randint(a, b - 1)
                 matrice[j][i] = matrice[i][j]
@@ -283,7 +275,6 @@ print("]")
 print(Dijkstra(M, 1))
 print(Bellman_Ford(M, 1))
 
-from scipy.stats import linregress
 
 log_n = np.log(valeurs)
 log_dij = np.log(np.array(temps_dij)+1e-8)
@@ -375,8 +366,6 @@ def seuil(n):
     return None
 
 print(seuil(20))
-
-import matplotlib.pyplot as plt
 
 def graphe_seuil(min_n=10, max_n=40):
     X = []
