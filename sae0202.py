@@ -10,7 +10,6 @@ def Dijkstra(M,d):
         return None
 
 
-
 bfs = list(nx.bfs_tree(G, source='A'))
 print("BFS à partir de A :", bfs)
 
