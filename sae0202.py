@@ -2,7 +2,6 @@ import numpy as np
 import random
 import time
 import matplotlib.pyplot as plt
-from scipy.stats import linregress
 
 def graphe(n,a,b):
     matrice = [[float('inf') for i in range(n)] for j in range(n)]
@@ -13,8 +12,6 @@ def graphe(n,a,b):
             matrice[i][j]= random.randint(0,1)
     for i in range(n):
         for j in range(n):
-            if i == j:
-                matrice[i][j]= float('inf')
             if matrice[i][j] == 1:
                 matrice[i][j] = random.randint(a, b)
             else:
@@ -27,8 +24,6 @@ def graphe2(n,p,a,b):
         a,b = b,a 
     for i in range(n):
         for j in range(n):
-            if i == j:
-                matrice[i][j]= float('inf')
             if random.random() < p:
                 matrice[i][j] = random.randint(a, b)
             else:
@@ -39,8 +34,6 @@ def graphe3(n, p, a, b):
     matrice = [[float('inf') for i in range(n)] for j in range(n)]
     for i in range(n):
         for j in range(i + 1, n):
-            if i == j:
-                matrice[i][j]= float('inf')
             if random.random() < p:
                 matrice[i][j] = random.randint(a, b - 1)
                 matrice[j][i] = matrice[i][j]
@@ -259,22 +252,34 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
-M = [
-    [float('inf'), float('inf'), 47, 56, float('inf'), 93],
-    [float('inf'), float('inf'), 34, float('inf'), 134, 86],
-    [47, 34, float('inf'), float('inf'), float('inf'), float('inf')],
-    [56, float('inf'), float('inf'), 62, float('inf'), float('inf')],
-    [float('inf'), 134, float('inf'), 62, float('inf'), float('inf')],
-    [93, 86, float('inf'), float('inf'), float('inf'), float('inf')]
+M_dij = [
+    [float('inf'), 2, 4, float('inf'), 1],
+    [float('inf'), float('inf'), 3, 8, float('inf')],
+    [float('inf'), float('inf'), float('inf'), 2, 6],
+    [7, float('inf'), float('inf'), float('inf'), 5],
+    [1, float('inf'), float('inf'), 4, float('inf')],
+]
+
+M_bf = [
+    [float('inf'), 6, float('inf'), 7, float('inf')],
+    [float('inf'), float('inf'), 5, 8, -4],
+    [float('inf'), -2, float('inf'), float('inf'), float('inf')],
+    [float('inf'), float('inf'), -3 float('inf'), 9],
+    [2, float('inf'), 7, float('inf'), float('inf')],
 ]
 
 print("[")
 for i in range(len(M)):
-    print(M[i])
+    print(M_dij[i])
 print("]")
-print(Dijkstra(M, 1))
-print(Bellman_Ford(M, 1))
+print("[")
+for i in range(len(M)):
+    print(M_bf[i])
+print("]")
+print(Dijkstra(M_dij, 1))
+print(Bellman_Ford(M_bf, 1))
 
+from scipy.stats import linregress
 
 log_n = np.log(valeurs)
 log_dij = np.log(np.array(temps_dij)+1e-8)
@@ -366,6 +371,8 @@ def seuil(n):
     return None
 
 print(seuil(20))
+
+import matplotlib.pyplot as plt
 
 def graphe_seuil(min_n=10, max_n=40):
     X = []
