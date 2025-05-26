@@ -23,10 +23,6 @@ M_dij = [
     [1, float('inf'), float('inf'), 4, float('inf')],
 ]
 
-def Dijkstra(M, d):
-    # Code identique
-    ...
-
 # -----------------------------------------------------------------------------
 # 1.2 Présentation de l’algorithme de Bellman-Ford
 # -----------------------------------------------------------------------------
@@ -39,10 +35,6 @@ M_bf = [
     [float('inf'), float('inf'), -3, float('inf'), 9],
     [2, float('inf'), 7, float('inf'), float('inf')],
 ]
-
-def Bellman_Ford(M, d):
-    # Code identique
-    ...
 
 # -----------------------------------------------------------------------------
 # 2. Dessin d’un graphe et d’un chemin à partir de sa matrice
@@ -72,14 +64,6 @@ def afficher_graphe_oriente(matrice, chemin=None, nom_fichier='graphe_oriente'):
                 dot.edge(str(i), str(j), label=str(int(poids)), color=couleur)
 
     dot.render(nom_fichier, view=True)
-
-#resultats = Dijkstra(M_dij, 0)
-#(a, b) = resultats[3]
-#afficher_graphe_oriente(M_dij, b, nom_fichier='dijkstra')
-
-#resultats = Bellman_Ford(M_bf, 0)
-#(a, b) = resltats[4]
-#afficher_graphe_oriente(M_bf, b, nom_fichier='bellman_ford')
 
 # -----------------------------------------------------------------------------
 # 3. Génération aléatoire de matrices de graphes pondérés
@@ -130,10 +114,135 @@ def graphe3(n, p, a, b):
                 matrice[j][i] = matrice[i][j]
     return matrice
 
+
+
+
 # -----------------------------------------------------------------------------
 # 4. Codage des algorithmes de plus court chemin
 # (déjà fait en 1.1 et 1.2)
 # -----------------------------------------------------------------------------
+
+def Dijkstra(M, d):
+    n = len(M)
+    dist = [float('inf')] * n
+    pred = [None] * n
+    dist[d] = 0
+    pred[d] = d
+
+    non_visites = set(range(n))
+
+    while len(non_visites) > 0:
+        s = -1
+        plus_petite_dist = float('inf')
+        for i in non_visites:
+            if dist[i] < plus_petite_dist:
+                plus_petite_dist = dist[i]
+                s = i
+
+        if s == -1:
+            non_visites.clear()
+        else:
+            non_visites.remove(s)
+
+            for t in range(n):
+                if M[s][t] != float('inf') and t in non_visites:
+                    if dist[s] + M[s][t] < dist[t]:
+                        dist[t] = dist[s] + M[s][t]
+                        pred[t] = s
+
+    resultats = {}
+    for s in range(n):
+        if s != d:
+            if dist[s] == float('inf'):
+                resultats[s] = "Sommet non joignable depuis " + str(d)
+            else:
+                chemin = []
+                courant = s
+                while courant != d:
+                    chemin.append(courant)
+                    courant = pred[courant]
+                chemin.append(d)
+                chemin.reverse()
+                resultats[s] = (dist[s], chemin)
+
+    return resultats 
+
+def Bellman_Ford(M, d):
+    n = len(M)
+    dist = [float('inf')] * n
+    pred = [None] * n
+
+    dist[d] = 0
+    pred[d] = d
+
+    F = []
+    for i in range(n):
+        for j in range(n):
+            if M[i][j] != float('inf'):
+                F.append((i, j))
+
+    modification = True
+    iteration = 0
+
+    while modification and iteration < n - 1:
+        modification = False
+        for (u, v) in F:
+            if dist[u] + M[u][v] < dist[v]:
+                dist[v] = dist[u] + M[u][v]
+                pred[v] = u
+                modification = True
+        iteration += 1
+
+    cycle_negatif = False
+    idx = 0
+    while not cycle_negatif and idx < len(F):
+        u, v = F[idx]
+        if dist[u] + M[u][v] < dist[v]:
+            cycle_negatif = True
+        idx += 1
+
+    if cycle_negatif:
+        print("Présence d'un cycle de poids négatif. Pas de plus court chemin fiable.")
+        return None
+
+    resultats = {}
+    for s in range(n):
+        if s != d:
+            if dist[s] == float('inf'):
+                resultats[s] = "Sommet non joignable depuis " + str(d)
+            else:
+                chemin = []
+                courant = s
+                while courant != d:
+                    chemin.append(courant)
+                    courant = pred[courant]
+                chemin.append(d)
+                chemin.reverse()
+                resultats[s] = (dist[s], chemin)
+
+    return resultats
+
+
+#resultats = Dijkstra(M_dij, 0)
+#print(resultats)
+#(a, b) = resultats[3]
+#afficher_graphe_oriente(M_dij, b, nom_fichier='dijkstra')
+
+#resultats = Bellman_Ford(M_bf, 0)
+#print(resultats)
+#(a, b) = resultats[4]
+#afficher_graphe_oriente(M_bf, b, nom_fichier='bellman_ford')
+
+#a = graphe(7,0,10)
+#a = graphe3(7,-3,10,0.3)
+#resultats = Dijkstra(M_dij, 0)
+#print(resultats)
+#(a, b) = resultats[3]
+#afficher_graphe_oriente(M_dij, b, nom_fichier='dijkstra')
+#resultats2 = Bellman_Ford(M_bf, 0)
+#print(resultats2)
+#(a, b) = resultats2[4]
+#afficher_graphe_oriente(M_bf, b, nom_fichier='bellman_ford')
 
 # -----------------------------------------------------------------------------
 # 5. Influence du choix de la liste ordonnée des flèches
