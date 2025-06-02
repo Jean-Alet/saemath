@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import numpy as np
 import random
 import time
@@ -11,7 +10,7 @@ from scipy.stats import linregress
 
 # -----------------------------------------------------------------------------
 # 1. Connaissance des algorithmes de plus courts chemins
-# 1.1 Présentation de l’algorithme de Dijkstra
+# 1.1 Présentation de l'algorithme de  Dijkstra
 # -----------------------------------------------------------------------------
 
 # → Exemple à faire à la main (petite matrice) et insérer ici la matrice et appel
