@@ -1,4 +1,4 @@
-from networkx import DiGraph
+from graphviz import DiGraph
 import numpy as np
 import random
 import time
