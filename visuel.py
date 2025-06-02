@@ -356,25 +356,27 @@ valeurs = list(range(5, 201, 10))
 temps_dij = [TempsDij(n) for n in valeurs]
 temps_bf = [TempsBF(n) for n in valeurs]
 
-plt.figure(figsize=(10, 6))
-plt.plot(valeurs, temps_dij, label="Dijkstra", marker='o')
-plt.plot(valeurs, temps_bf, label="Bellman-Ford (PL)", marker='s')
-plt.xlabel("Taille du graphe (n)")
-plt.ylabel("Temps (secondes)")
-plt.title("Temps de calcul des plus courts chemins")
-plt.legend()
-plt.grid(True)
-plt.show()
+def plot_temps_calcul_classique(valeurs, temps_dij, temps_bf):
+    plt.figure(figsize=(10, 6))
+    plt.plot(valeurs, temps_dij, label="Dijkstra", marker='o')
+    plt.plot(valeurs, temps_bf, label="Bellman-Ford (PL)", marker='s')
+    plt.xlabel("Taille du graphe (n)")
+    plt.ylabel("Temps (secondes)")
+    plt.title("Temps de calcul des plus courts chemins")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
-log_n = np.log(valeurs)
-log_dij = np.log(np.array(temps_dij)+1e-8)
-log_bf = np.log(np.array(temps_bf)+1e-8)
+def estime_exposant(valeurs, temps_dij, temps_bf):
+    log_n = np.log(valeurs)
+    log_dij = np.log(np.array(temps_dij) + 1e-8)
+    log_bf = np.log(np.array(temps_bf) + 1e-8)
 
-result_dij = linregress(log_n, log_dij)
-result_bf = linregress(log_n, log_bf)
+    result_dij = linregress(log_n, log_dij)
+    result_bf = linregress(log_n, log_bf)
 
-print(f"Exposant estimé (Dijkstra) a ≈ {result_dij.slope:.2f}")
-print(f"Exposant estimé (Bellman-Ford PL) a ≈ {result_bf.slope:.2f}")
+    print(f"Exposant estimé (Dijkstra) a ≈ {result_dij.slope:.2f}")
+    print(f"Exposant estimé (Bellman-Ford PL) a ≈ {result_bf.slope:.2f}")
 
 # 6.2 bis : cas p = 1/n
 def TempsDij_variable(n):
@@ -391,18 +393,19 @@ def TempsBF_variable(n):
     Bellman_Ford_variante(m, 0, mode='pl')
     return time.time() - start
 
-temps_dij_var = [TempsDij_variable(n) for n in valeurs]
-temps_bf_var = [TempsBF_variable(n) for n in valeurs]
+def plot_temps_calcul_variable(valeurs):
+    temps_dij_var = [TempsDij_variable(n) for n in valeurs]
+    temps_bf_var = [TempsBF_variable(n) for n in valeurs]
 
-plt.figure(figsize=(10,6))
-plt.plot(valeurs, temps_dij_var, label="Dijkstra (p=1/n)", marker='o')
-plt.plot(valeurs, temps_bf_var, label="Bellman-Ford PL (p=1/n)", marker='s')
-plt.xlabel("Taille du graphe (n)")
-plt.ylabel("Temps (secondes)")
-plt.title("Temps de calcul avec p = 1/n")
-plt.legend()
-plt.grid(True)
-plt.show()
+    plt.figure(figsize=(10,6))
+    plt.plot(valeurs, temps_dij_var, label="Dijkstra (p=1/n)", marker='o')
+    plt.plot(valeurs, temps_bf_var, label="Bellman-Ford PL (p=1/n)", marker='s')
+    plt.xlabel("Taille du graphe (n)")
+    plt.ylabel("Temps (secondes)")
+    plt.title("Temps de calcul avec p = 1/n")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
 # =============================================================================
 # II. SEUIL DE FORTE CONNEXITÉ D’UN GRAPHE ORIENTÉ
