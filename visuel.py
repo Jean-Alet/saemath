@@ -1,3 +1,4 @@
+from networkx import DiGraph
 import numpy as np
 import random
 import time
@@ -46,7 +47,7 @@ def afficher_graphe_oriente(matrice, chemin=None, nom_fichier='graphe_oriente'):
     
     aretes_chemin = list(zip(chemin, chemin[1:]))
     
-    dot = Digraph(format='png')
+    dot = DiGraph(format='png')
     dot.attr(rankdir='LR')
     
     
