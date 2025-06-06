@@ -33,7 +33,7 @@ M_dij = [
 # 1.2 Présentation de l’algorithme de Bellman-Ford
 # -----------------------------------------------------------------------------
 
-# → Exemple à faire à la main avec poids négatifs (petite matrice)
+# Exemple à faire à la main avec poids négatifs (petite matrice)
 M_bf = [
     [float('inf'), 6, float('inf'), 7, float('inf')],
     [float('inf'), float('inf'), 5, 8, -4],
@@ -46,22 +46,40 @@ M_bf = [
 # 2. Dessin d’un graphe et d’un chemin à partir de sa matrice
 # -----------------------------------------------------------------------------
 
-# Partie à compléter : utiliser des bibliothèques comme NetworkX ou Graphviz
 def afficher_graphe_oriente(matrice, chemin=None, nom_fichier='graphe_oriente'):
+    """
+    Affiche un graphe orienté pondéré à partir d'une matrice d'adjacence, 
+    en mettant en évidence un chemin particulier s'il est fourni.
+
+    Le graphe est généré au format PNG à l'aide de la bibliothèque Graphviz.
+
+    Args:
+        matrice (list[list[float]]): Matrice d'adjacence représentant les poids des arêtes. 
+            Une valeur de 0 ou np.inf indique l'absence d arête.
+        chemin (list[int], optional): Liste de sommets représentant un chemin à surligner en rouge. 
+            Par défaut, aucun chemin n est surligné.
+        nom_fichier (str, optional): Nom du fichier de sortie sans extension. 
+            Par défaut, 'graphe_oriente'.
+
+    Returns:
+        None: La fonction génère un fichier image PNG et l'ouvre automatiquement dans le visualiseur par défaut.
+    """
+
     if chemin is None:
         chemin = []
-    
+
     aretes_chemin = list(zip(chemin, chemin[1:]))
-    
+
     dot = Digraph(format='png')
-    dot.attr(rankdir='LR')
-    
-    
+    dot.attr(rankdir='LR')  # Orientation gauche à droite
+
+    # Ajout des noeuds avec coloration spéciale pour ceux présents dans le chemin
     for i in range(len(matrice)):
         label = str(i)
         color = 'lightcoral' if i in chemin else 'lightblue'
         dot.node(label, style='filled', fillcolor=color)
-    
+
+    # Ajout des arêtes avec coloration spéciale pour celles du chemin
     for i in range(len(matrice)):
         for j in range(len(matrice[i])):
             poids = matrice[i][j]
@@ -76,41 +94,83 @@ def afficher_graphe_oriente(matrice, chemin=None, nom_fichier='graphe_oriente'):
 # -----------------------------------------------------------------------------
 
 # 3.1 Graphe avec ~50% d’arcs
+
 def graphe(n,a,b):
+    """
+    Génère une matrice d'adjacence représentant un graphe orienté 
+    avec environ 50% d'arcs, pondérés aléatoirement entre les valeurs a et b.
+
+    Args:
+        n (int): Nombre de sommets du graphe.
+        a (int): Borne inférieure des poids des arêtes (incluse).
+        b (int): Borne supérieure des poids des arêtes (incluse).
+
+    Returns:
+        list[list[float]]: Matrice d'adjacence du graphe, où une valeur 
+        float('inf') signifie l'absence d'arête entre deux sommets.
+    """
     matrice = [[float('inf') for i in range(n)] for j in range(n)]
-    if a >= b:
+
+    if a >= b:  # Pour vérifier que a est inférieur ou égal à b
         a,b = b,a 
-    for i in range(n):
+
+    # Placement aléatoire de 0 ou 1 entre les sommets
+    for i in range(n): 
         for j in range(n):
-            matrice[i][j]= random.randint(0,1)
+            matrice[i][j]= random.randint(0,1) # Environ 50% de chances
+
+    # Attribution des poids
     for i in range(n):
         for j in range(n):
             if i==j:
-                matrice[i][j] = float('inf')
+                matrice[i][j] = float('inf') # Pour supprimer les boucles
             if matrice[i][j] == 1:
-                matrice[i][j] = random.randint(a, b)
+                matrice[i][j] = random.randint(a, b) # Poids entre a et b pour les autres points
             else:
                 matrice[i][j] = float('inf')
     return matrice
 
 # 3.2 Graphe avec proportion variable p
+
 def graphe2(n,p,a,b):
+    """
+    Génère une matrice d'adjacence représentant un graphe orienté pondéré,
+    où chaque arrête a une probabilité p d'exister et un poids aléatoire 
+    compris entre a et b.
+
+    Args:
+        n (int): Nombre de sommets du graphe.
+        p (float): Probabilité qu'un arc existe entre deux sommets (0 ≤ p ≤ 1).
+        a (int): Borne inférieure des poids des arêtes (incluse).
+        b (int): Borne supérieure des poids des arêtes (incluse).
+
+    Returns:
+        list[list[float]]: Matrice d'adjacence du graphe, où float('inf') signifie
+        l'absence d'arête entre deux sommets.
+    """
+    # Initialisation de la matrice avec des valeurs infinies 
     matrice = [[float('inf') for i in range(n)] for j in range(n)]
-    if a >= b:
+    
+    if a >= b: # Pour vérifier que a est inférieur ou égal à b
         a,b = b,a 
+
     for i in range(n):
         for j in range(n):
             if i==j:
-                matrice[i][j] = float('inf')
-            if random.random() < p:
-                matrice[i][j] = random.randint(a, b)
+                matrice[i][j] = float('inf') # Pas de boucle
+            if random.random() < p: # Mettre une proba p d'arrêtes
+                matrice[i][j] = random.randint(a, b) # Ajout d'un arc avec poids entre a et b
             else:
                 matrice[i][j] = float('inf')
     return matrice
 
 # Variante symétrique non orientée pour certains tests
 def graphe3(n, p, a, b):
+   # -----------------------IMPORTANT JE NE SUIS PAS SUR QUE LA FONCTION SOIT CORRECTE ---------------------------------
+    # Initialisation d'une matrice n x n 
     matrice = [[float('inf') for i in range(n)] for j in range(n)]
+    
+    # Construction uniquement sur la moitié supérieure pour éviter les doublons
     for i in range(n):
         for j in range(i + 1, n):
             if i==j:
