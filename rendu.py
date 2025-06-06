@@ -354,33 +354,53 @@ def Bellman_Ford(M, d):
 
 # Parcours largeur
 def pl(M, s):
+    """
+    Effectue un parcours en largeur (BFS) d un graphe à partir d un sommet source.
+
+    Args:
+        M (list[list[int]]): Matrice d adjacence du graphe (valeurs 1 pour les arêtes, 0 sinon).
+        s (int): Indice du sommet de départ.
+
+    Returns:
+        list[int]: Liste des sommets visités dans l ordre du parcours en largeur.
+    """
     n = len(M)
     couleur = {i: "blanc" for i in range(n)}
     couleur[s] = "vert"
-    file = [s]
-    Resultat = [s]
+    file = [s]                                 # File pour gérer les sommets à explorer
+    Resultat = [s]                             # Liste des sommets visités
     while len(file) > 0:
-        i = file[0]
+        i = file[0]                             # Sommet en tête de file
         j = 0
         while j < n:
             if M[i][j] == 1 and couleur[j] == "blanc":
-                file.append(j)
-                couleur[j] = "vert"
+                file.append(j)                 # On ajoute le voisin non visité
+                couleur[j] = "vert"            # Marqué comme visité
                 Resultat.append(j)
             j += 1
-        file.pop(0)
+        file.pop(0)                            # On retire le sommet traité de la file
     return Resultat
 
 # Parcours profondeur
 def pp(M, s):
+    """
+    Effectue un parcours en profondeur (DFS) d un graphe à partir d un sommet source.
+
+    Args:
+        M (list[list[int]]): Matrice d adjacence du graphe (valeurs 1 pour les arêtes, 0 sinon).
+        s (int): Indice du sommet de départ.
+
+    Returns:
+        list[int]: Liste des sommets visités dans l ordre du parcours en profondeur.
+    """
     n = len(M)
     couleur = {i: "blanc" for i in range(n)}
     couleur[s] = "vert"
-    pile = [s]
+    pile = [s]                                # Pile pour la stratégie de parcours en profondeur
     Resultat = [s]
     while len(pile) > 0:
-        i = pile[-1]
-        Succ_blanc = []
+        i = pile[-1]                           # Sommet au sommet de la pile
+        Succ_blanc = []                        # Liste des successeurs non visités
         j = 0
         while j < n:
             if M[i][j] == 1 and couleur[j] == "blanc":
@@ -392,7 +412,7 @@ def pp(M, s):
             pile.append(v)
             Resultat.append(v)
         else:
-            pile.pop()
+            pile.pop()                         # Aucun successeur non visité : on revient en arrière
     return Resultat
 
 # Variante de Bellman-Ford
