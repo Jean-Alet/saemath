@@ -189,13 +189,27 @@ def graphe3(n, p, a, b):
 # -----------------------------------------------------------------------------
 
 def Dijkstra(M, d):
-    n = len(M)
-    dist = [float('inf')] * n
-    pred = [None] * n
-    dist[d] = 0
-    pred[d] = d
+    """
+    Implémente l'algorithme de Dijkstra pour trouver les plus courts chemins
+    depuis un sommet source d vers tous les autres sommets dans un graphe pondéré.
 
-    non_visites = set(range(n))
+    Args:
+        M (list[list[float]]): Matrice d'adjacence représentant le graphe. 
+            Une valeur float('inf') signifie l'absence d'arête entre deux sommets.
+        d (int): Indice du sommet de départ.
+
+    Returns:
+        dict: Dictionnaire où chaque clé est un sommet de destination `s` et chaque valeur est :
+              - un tuple (distance, chemin) si `s` est atteignable depuis `d`
+              - une chaîne indiquant que le sommet n'est pas joignable sinon.
+    """
+    n = len(M)                       # Nombre de sommets
+    dist = [float('inf')] * n        # Distances minimales depuis le sommet source
+    pred = [None] * n                # Prédécesseurs 
+    dist[d] = 0                      # Distance du sommet source à lui-même
+    pred[d] = d                      # Le prédécesseur du sommet source est lui-même
+
+    non_visites = set(range(n))      # Ensemble des sommets pas visités
 
     while len(non_visites) > 0:
         s = -1
@@ -205,17 +219,19 @@ def Dijkstra(M, d):
                 plus_petite_dist = dist[i]
                 s = i
 
-        if s == -1:
+        if s == -1: # Aucun sommet accessible restant 
             non_visites.clear()
         else:
             non_visites.remove(s)
 
+            # Mise à jour des distances pour les voisins de s
             for t in range(n):
                 if M[s][t] != float('inf') and t in non_visites:
                     if dist[s] + M[s][t] < dist[t]:
                         dist[t] = dist[s] + M[s][t]
                         pred[t] = s
 
+    # Résultats correspond aux distances et chemins depuis la source
     resultats = {}
     for s in range(n):
         if s != d:
@@ -234,22 +250,41 @@ def Dijkstra(M, d):
     return resultats 
 
 def Bellman_Ford(M, d):
+    """
+    Applique l'algorithme de Bellman-Ford pour trouver les plus courts chemins 
+    depuis un sommet source `d` dans un graphe pondéré pouvant contenir des poids négatifs.
+
+    Args:
+        M (list[list[float]]): Matrice d'adjacence du graphe. 
+            float('inf') indique l'absence darête entre deux sommets.
+        d (int): Indice du sommet source.
+
+    Returns:
+        dict or None: 
+            - Si aucun cycle négatif nest détecté, retourne un dictionnaire où :
+                * chaque clé est un sommet atteignable depuis `d`
+                * chaque valeur est un tuple (distance, chemin) ou un message pour les sommets inaccessibles
+            - Si un cycle de poids négatif est détecté, affiche un message et retourne None.
+    """
+
     n = len(M)
-    dist = [float('inf')] * n
-    pred = [None] * n
+    dist = [float('inf')] * n       # Distances minimales depuis la source
+    pred = [None] * n               # Prédécesseurs
 
-    dist[d] = 0
-    pred[d] = d
+    dist[d] = 0                     # La distance du sommet source à lui-même est 0
+    pred[d] = d                     # Le prédécesseur du sommet source est lui-même
 
-    F = []
+    F = []                          # Liste des arêtes (u, v) du graphe
+
     for i in range(n):
         for j in range(n):
             if M[i][j] != float('inf'):
-                F.append((i, j))
+                F.append((i, j))    # Ajout des arêtes valides
 
-    modification = True
+    modification = True             # Indique si une mise à jour a été faite lors de l'itération
     iteration = 0
 
+    # Les distances sont mises à jour à partir des arêtes, jusqu'à stabilisation ou après n - 1 itérations
     while modification and iteration < n - 1:
         modification = False
         for (u, v) in F:
@@ -259,6 +294,7 @@ def Bellman_Ford(M, d):
                 modification = True
         iteration += 1
 
+    # Détection de cycle de poids négatif
     cycle_negatif = False
     idx = 0
     while not cycle_negatif and idx < len(F):
@@ -271,6 +307,8 @@ def Bellman_Ford(M, d):
         print("Présence d'un cycle de poids négatif. Pas de plus court chemin fiable.")
         return None
 
+
+    # Construction des chemins et des résultats
     resultats = {}
     for s in range(n):
         if s != d:
