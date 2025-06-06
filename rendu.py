@@ -1,3 +1,9 @@
+# =============================================================================
+# 
+# 
+# 
+# =============================================================================
+
 from graphviz import Digraph
 import numpy as np
 import random
@@ -14,7 +20,7 @@ from scipy.stats import linregress
 # 1.1 Présentation de l'algorithme de  Dijkstra
 # -----------------------------------------------------------------------------
 
-# → Exemple à faire à la main (petite matrice) et insérer ici la matrice et appel
+# Exemple à faire à la main (petite matrice) et insérer ici la matrice et appel
 M_dij = [
     [float('inf'), 2, 4, float('inf'), 1],
     [float('inf'), float('inf'), 3, 8, float('inf')],
@@ -40,7 +46,7 @@ M_bf = [
 # 2. Dessin d’un graphe et d’un chemin à partir de sa matrice
 # -----------------------------------------------------------------------------
 
-# → Partie à compléter : utiliser des bibliothèques comme NetworkX ou Graphviz
+# Partie à compléter : utiliser des bibliothèques comme NetworkX ou Graphviz
 def afficher_graphe_oriente(matrice, chemin=None, nom_fichier='graphe_oriente'):
     if chemin is None:
         chemin = []
