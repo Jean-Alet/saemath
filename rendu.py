@@ -373,7 +373,7 @@ def pl(M, s):
         i = file[0]                             # Sommet en tête de file
         j = 0
         while j < n:
-            if M[i][j] == 1 and couleur[j] == "blanc":
+            if M[i][j] != float('inf') and couleur[j] == "blanc":
                 file.append(j)                 # On ajoute le voisin non visité
                 couleur[j] = "vert"            # Marqué comme visité
                 Resultat.append(j)
@@ -403,7 +403,7 @@ def pp(M, s):
         Succ_blanc = []                        # Liste des successeurs non visités
         j = 0
         while j < n:
-            if M[i][j] == 1 and couleur[j] == "blanc":
+            if M[i][j] != float('inf') and couleur[j] == "blanc":
                 Succ_blanc.append(j)
             j += 1
         if len(Succ_blanc) > 0:
