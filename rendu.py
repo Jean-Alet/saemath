@@ -553,7 +553,7 @@ def plot_temps_calcul_classique(valeurs, temps_dij, temps_bf):
     Returns:
         None: Cette fonction ne retourne rien, elle affiche un graphique.
     """
-
+    
     plt.figure(figsize=(10, 6))
     plt.plot(valeurs, temps_dij, label="Dijkstra", marker='o')
     plt.plot(valeurs, temps_bf, label="Bellman-Ford (PL)", marker='s')
@@ -565,17 +565,40 @@ def plot_temps_calcul_classique(valeurs, temps_dij, temps_bf):
     plt.show()
 
 def estime_exposant(valeurs, temps_dij, temps_bf):
+    """
+    Estime l'exposant de complexité empirique (a dans t ≈ n^a) pour les algorithmes de Dijkstra et Bellman-Ford.
 
+    Args:
+        valeurs (list[int]): Liste des tailles de graphes (valeurs de n).
+        temps_dij (list[float]): Temps d'exécution mesurés pour Dijkstra.
+        temps_bf (list[float]): Temps d'exécution mesurés pour Bellman-Ford.
+
+    Affiche :
+        - L'exposant estimé pour Dijkstra.
+        - L'exposant estimé pour Bellman-Ford en mode parcours largeur (PL).
+    """
     log_n = np.log(valeurs)
     log_dij = np.log(np.array(temps_dij) + 1e-8)
     log_bf = np.log(np.array(temps_bf) + 1e-8)
+
     result_dij = linregress(log_n, log_dij)
     result_bf = linregress(log_n, log_bf)
-    print("Exposant estimé (Dijkstra) a ≈", result_dij.slope:.2f)
-    print("Exposant estimé (Bellman-Ford PL) a ≈ ",result_bf.slope:.2f)
+#----------------------------------------------------------------------------------------------A CHANGER
+    print("Dijkstra :", round(result_dij.slope, 2))
+    print("Bellman-Ford PL :", round(result_bf.slope, 2))
+#---------------------------------------------------------------------------------------------------------
 
 # 6.2 bis : cas p = 1/n
 def TempsDij_variable(n):
+    """
+    Calcule le temps d'exécution de l'algorithme de Dijkstra pour un graphe généré avec une probabilité d'arête p = 1/n.
+
+    Args:
+        n (int): Nombre de sommets du graphe.
+
+    Returns:
+        float: Temps d'exécution de l'algorithme en secondes.
+    """
     p = 1 / n
     m = graphe3(n, p, 1, 10)
     start = time.time()
@@ -583,6 +606,16 @@ def TempsDij_variable(n):
     return time.time() - start
 
 def TempsBF_variable(n):
+    """
+    Calcule le temps d'exécution de l'algorithme de Bellman-Ford (avec parcours en largeur)
+    pour un graphe généré avec une probabilité d'arête p = 1/n.
+
+    Args:
+        n (int): Nombre de sommets du graphe.
+
+    Returns:
+        float: Temps d'exécution de l'algorithme en secondes.
+    """
     p = 1 / n
     m = graphe3(n, p, 1, 10)
     start = time.time()
@@ -590,10 +623,22 @@ def TempsBF_variable(n):
     return time.time() - start
 
 def plot_temps_calcul_variable(valeurs):
+    """
+    Trace un graphique comparant les temps de calcul des algorithmes de Dijkstra et Bellman-Ford
+    sur des graphes où la probabilité d'arête p = 1/n.
+
+    Args:
+        valeurs (list[int]): Liste des tailles de graphes (nombre de sommets).
+
+    Returns:
+        None
+    """
+
+    # Calcul des temps pour chaque taille de graphe
     temps_dij_var = [TempsDij_variable(n) for n in valeurs]
     temps_bf_var = [TempsBF_variable(n) for n in valeurs]
 
-    plt.figure(figsize=(10,6))
+    plt.figure(figsize=(10,6)) # Voici le graphe
     plt.plot(valeurs, temps_dij_var, label="Dijkstra (p=1/n)", marker='o')
     plt.plot(valeurs, temps_bf_var, label="Bellman-Ford PL (p=1/n)", marker='s')
     plt.xlabel("Taille du graphe (n)")
