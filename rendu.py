@@ -412,17 +412,41 @@ def pp(M, s):
             pile.append(v)
             Resultat.append(v)
         else:
-            pile.pop()                         # Aucun successeur non visité : on revient en arrière
+            pile.pop()                         # Aucun successeur non visité
     return Resultat
 
 # Variante de Bellman-Ford
-def Bellman_Ford_variante(M, d, mode):
+def Bellman_Ford_variante(M, d, mode='Aléatoire'):
+    """
+    Variante de l'algorithme de Bellman-Ford utilisant un ordre de parcours spécifique des sommets.
+
+    Cette fonction applique l'algorithme de Bellman-Ford en explorant les arêtes selon un ordre déterminé
+    par un parcours en largeur, en profondeur, ou un ordre aléatoire des sommets.
+
+    Args:
+        M (list[list[float]]): Matrice d'adjacence du graphe pondéré.
+            Les absences d'arêtes doivent être codées avec float('inf').
+        d (int): Indice du sommet source.
+        mode (str, optional): Mode de parcours des sommets :
+            - 'pl' : parcours en largeur (BFS)
+            - 'pp' : parcours en profondeur (DFS)
+            - tout autre valeur : ordre aléatoire
+            Par défaut, le mode est 'Aléatoire'.
+
+    Returns:
+        tuple:
+            - str: Message indiquant le nombre d itérations effectuées dans la variante.
+            - dict or None: Résultat de l appel à Bellman_Ford classique depuis le même sommet.
+                Le dictionnaire associe à chaque sommet atteint une paire (distance, chemin),
+                ou une chaîne indiquant l'inaccessibilité. Retourne None en cas de cycle négatif.
+    """
     n = len(M)
     dist = [float('inf')] * n
     pred = [None] * n
     dist[d] = 0
     pred[d] = d
 
+    # Détermination de l’ordre des sommets selon le mode choisi
     if mode == 'pl':
         ordre_sommets = pl(M, d)
     elif mode == 'pp':
@@ -431,12 +455,14 @@ def Bellman_Ford_variante(M, d, mode):
         ordre_sommets = list(range(n))
         random.shuffle(ordre_sommets)
 
+    # Construction de la liste des arêtes selon cet ordre
     F = []
     for u in ordre_sommets:
         for v in range(n):
             if M[u][v] != float('inf'):
                 F.append((u, v))
 
+    # Mise à jour des distances 
     modification = True
     iteration = 0
     while modification and iteration < n - 1:
@@ -447,16 +473,31 @@ def Bellman_Ford_variante(M, d, mode):
                 pred[v] = u
                 modification = True
         iteration += 1
+        message = "Itération : " + str(iteration)
 
-    return iteration
+    return (message, Bellman_Ford(M, d))
+
 
 def test_variantes_BF():
-    n = 50
-    M = graphe3(n, 0.2, 1, 10)
+    """
+    Teste les différentes variantes de l'algorithme de Bellman-Ford sur un graphe généré.
+
+    Génère un graphe non orienté aléatoire avec 5 sommets et une densité de 20 % d'arêtes.
+    Applique la variante de Bellman-Ford avec trois ordres de parcours :
+        - 'aléatoire' : ordre aléatoire des sommets
+        - 'pl' : parcours en largeur
+        - 'pp' : parcours en profondeur
+
+    Affiche le nombre d'itérations nécessaires pour chaque mode.
+    """
+    n = 5
+    M = graphe3(n, 0.2, 1, 10) 
     modes = ['aléatoire', 'pl', 'pp']
+    
     for mode in modes:
         iters = Bellman_Ford_variante(M, 0, mode)
-        print(f"Mode {mode} : {iters} itérations")
+        print("Mode", mode, ", itérations :", iters)
+
 
 # -----------------------------------------------------------------------------
 # 6. Comparaison expérimentale des complexités
