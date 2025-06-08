@@ -657,6 +657,16 @@ def plot_temps_calcul_variable(valeurs):
 # -----------------------------------------------------------------------------
 
 def graphepourfc(n, p=0.5):
+    """
+    Génère une matrice d'adjacence pour un graphe aléatoire non orienté.
+
+    Args:
+        n (int): Nombre de sommets du graphe.
+        p (float, optional): Probabilité qu'une arête existe entre deux sommets. Par défaut à 0.5.
+
+    Returns:
+        list[list[int]]: Matrice d'adjacence du graphe, avec 1 pour une arête présente, 0 sinon.
+    """
     matrice = [[0 for i in range(n)] for j in range(n)]
     for i in range(n):
         for j in range(n):
@@ -667,20 +677,40 @@ def graphepourfc(n, p=0.5):
     return matrice
 
 def Trans2(M):
+    """
+    Calcule la clôture transitive d'un graphe représenté par sa matrice d'adjacence.
+    La clôture transitive indique si un chemin existe entre deux sommets.
+
+    Args:
+        M (list[list[int]]): Matrice d'adjacence (avec 0/1) représentant le graphe.
+
+    Returns:
+        list[list[int]]: Matrice d'adjacence mise à jour avec la clôture transitive.
+    """
     n = len(M)
     for k in range(n):
         for i in range(n):
             for j in range(n):
-                if M[i][k] and M[k][j]:
+                if M[i][k] and M[k][j]: # Si i est connecté à k et k est connecté à j, alors i est connecté à j
                     M[i][j] = 1
     return M
 
 def fc(M):
+    """
+    Vérifie si le graphe représenté par la matrice d'adjacence M est fortement connecté,
+    c'est-à-dire s'il existe un chemin entre chaque paire de sommets.
+
+    Args:
+        M (list[list[int]]): Matrice d'adjacence du graphe.
+
+    Returns:
+        bool: True si le graphe est fortement connecté, False sinon.
+    """
     A = Trans2(M)
     n = len(M)
     for i in range(n):
         for j in range(n):
-            if A[i][j] == 0:
+            if A[i][j] == 0: # Si un chemin n'existe pas entre i et j, le graphe n'est pas fortement connecté
                 return False
     return True
 
@@ -689,7 +719,17 @@ def fc(M):
 # -----------------------------------------------------------------------------
 
 def teststatfc(n, p=0.5):
-    # valeur par défaut de p est a 0.5
+    """
+    Effectue des tests statistiques pour estimer la probabilité qu'un graphe généré aléatoirement
+    soit fortement connexe.
+
+    Args:
+        n (int): Nombre de sommets du graphe.
+        p (float, optional): Probabilité qu'une arête existe entre deux sommets. Défaut à 0.5.
+
+    Returns:
+        float: Pourcentage de graphes fortement connexes parmi les graphes générés.
+    """
     a = 200
     b = 0
     for i in range(a):
@@ -698,6 +738,13 @@ def teststatfc(n, p=0.5):
     return (100 * b / a)
 
 def lafonctionquiaffiche(n, p=0.5):
+    """
+    Affiche le pourcentage de graphes fortement connexes pour différentes tailles de graphe.
+
+    Args:
+        n (int): Taille maximale des graphes (nombre de sommets).
+        p (float, optional): Probabilité d'existence d'une arête entre deux sommets. Défaut à 0.5.
+    """
     print("forte connexité avec proba de 1 :", p)
     for i in range(1, n+1):
         a = teststatfc(i, p)
@@ -708,6 +755,16 @@ def lafonctionquiaffiche(n, p=0.5):
 # -----------------------------------------------------------------------------
 
 def seuil(n):
+    """
+    Trouve la plus petite probabilité p pour laquelle un graphe à n sommets est fortement connexe
+    avec une probabilité d'au moins 99 %.
+
+    Args:
+        n (int): Nombre de sommets du graphe.
+
+    Returns:
+        float or None: La probabilité seuil arrondie à deux décimales, ou None si aucune ne convient.
+    """
     p = 0.0
     while p <= 1.0:
         taux = teststatfc(n, p)
@@ -722,6 +779,16 @@ def seuil(n):
 
 # 10.1 Graphique
 def graphe_seuil(min_n=10, max_n=40):
+    """
+    Trace le graphique de l'évolution du seuil de forte connexité en fonction de la taille du graphe.
+
+    Args:
+        min_n (int): Taille minimale du graphe (nombre de sommets).
+        max_n (int): Taille maximale du graphe (nombre de sommets).
+
+    Returns:
+        None: Affiche le graphique directement.
+    """
     X = []
     Y = []
     for n in range(min_n, max_n + 1):
@@ -738,6 +805,17 @@ def graphe_seuil(min_n=10, max_n=40):
 
 # 10.2 Régression log-log
 def analyse_seuil_puissance(min_n=10, max_n=40):
+    """
+    Analyse la relation entre la taille du graphe et le seuil de forte connexité en utilisant une
+    régression linéaire sur les données transformées en log-log.
+
+    Args:
+        min_n (int): Taille minimale du graphe (nombre de sommets).
+        max_n (int): Taille maximale du graphe (nombre de sommets).
+
+    Returns:
+        None: Affiche les résultats de la régression et le graphique correspondant.
+    """
     X = []
     Y = []
     for n in range(min_n, max_n + 1):
