@@ -505,23 +505,55 @@ def test_variantes_BF():
 
 # 6.1 Temps de calcul
 def TempsDij(n):
+    """
+    Calcule le temps d'exécution de l'algorithme de Dijkstra sur un graphe aléatoire.
+
+    Args:
+        n (int): Nombre de sommets du graphe.
+
+    Returns:
+        float: Durée d'exécution en secondes.
+    """
     m = graphe3(n, 0.2, 1, 10)
     start = time.time()
     Dijkstra(m, 0)
     return time.time() - start
 
 def TempsBF(n):
+    """
+    Calcule le temps d'exécution de l'algorithme de Bellman-Ford (variante) avec parcours en largeur.
+
+    Args:
+        n (int): Nombre de sommets du graphe.
+
+    Returns:
+        float: Durée d'exécution en secondes.
+    """
     m = graphe3(n, 0.2, 1, 10)
     start = time.time()
     Bellman_Ford_variante(m, 0, mode='pl')
     return time.time() - start
 
-# 6.2 Courbes et régression
+# Des exemples pour les tests
 valeurs = list(range(5, 201, 10))
 temps_dij = [TempsDij(n) for n in valeurs]
 temps_bf = [TempsBF(n) for n in valeurs]
 
+
+# 6.2 Courbes et régression
 def plot_temps_calcul_classique(valeurs, temps_dij, temps_bf):
+    """
+    Affiche un graphique comparatif du temps de calcul des algorithmes de Dijkstra et de Bellman-Ford (en mode PL).
+
+    Args:
+        valeurs (list[int]): Liste des tailles de graphes testées (valeurs de n).
+        temps_dij (list[float]): Temps d'exécution de l'algorithme de Dijkstra pour chaque valeur de n.
+        temps_bf (list[float]): Temps d'exécution de l'algorithme de Bellman-Ford (mode 'pl') pour chaque valeur de n.
+
+    Returns:
+        None: Cette fonction ne retourne rien, elle affiche un graphique.
+    """
+
     plt.figure(figsize=(10, 6))
     plt.plot(valeurs, temps_dij, label="Dijkstra", marker='o')
     plt.plot(valeurs, temps_bf, label="Bellman-Ford (PL)", marker='s')
@@ -533,15 +565,14 @@ def plot_temps_calcul_classique(valeurs, temps_dij, temps_bf):
     plt.show()
 
 def estime_exposant(valeurs, temps_dij, temps_bf):
+
     log_n = np.log(valeurs)
     log_dij = np.log(np.array(temps_dij) + 1e-8)
     log_bf = np.log(np.array(temps_bf) + 1e-8)
-
     result_dij = linregress(log_n, log_dij)
     result_bf = linregress(log_n, log_bf)
-
-    print(f"Exposant estimé (Dijkstra) a ≈ {result_dij.slope:.2f}")
-    print(f"Exposant estimé (Bellman-Ford PL) a ≈ {result_bf.slope:.2f}")
+    print("Exposant estimé (Dijkstra) a ≈", result_dij.slope:.2f)
+    print("Exposant estimé (Bellman-Ford PL) a ≈ ",result_bf.slope:.2f)
 
 # 6.2 bis : cas p = 1/n
 def TempsDij_variable(n):
